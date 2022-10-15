@@ -3,6 +3,7 @@ from pprint import pprint
 from dotenv import load_dotenv
 import os
 
+
 def get_hh_vacancies(language):
     hh_url = 'https://api.hh.ru/vacancies'
     payload = {
