@@ -42,6 +42,7 @@ def predict_rub_salary(salary_from, salary_to, salary_currency):
     elif salary_to:
         return int(salary_to) * 0.8
 
+
 def make_table(languaged_vacancies, company):
     table_payload = [
         ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата']
@@ -75,15 +76,16 @@ if __name__ == '__main__':
         except requests.exceptions.HTTPError:
             continue
         for vacancy in sj_vacancies:
-            if not vacancy.get('salary'):
+            if not vacancy.get('payment_from') and not vacancy.get('payment_to'):
                 continue
             predicted_sj_salary = predict_rub_salary(
-                sj_vacancies['payment_from'],
-                sj_vacancies['payment_to'],
-                sj_vacancies['currency']
+                vacancy['payment_from'],
+                vacancy['payment_to'],
+                vacancy['currency']
             )
             if predicted_sj_salary:
-                hh_salaries.append(predicted_sj_salary)
+                sj_salaries.append(predicted_sj_salary)
+
         average_salary = 0
         if sj_salaries:
             sj_average_salary = int(sum(sj_salaries) / len(sj_salaries))
@@ -110,7 +112,7 @@ if __name__ == '__main__':
                 'vacancies_processed': len(hh_salaries),
                 'average_salary': hh_average_salary
             }
-    #sj_table = make_table(sj_languaged_vacancies, 'sj')
+    sj_table = make_table(sj_languaged_vacancies, 'sj')
     hh_table = make_table(hh_languaged_vacancies, 'hh')
-    #print(sj_table.table)
+    print(sj_table.table)
     print(hh_table.table)
