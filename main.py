@@ -8,7 +8,7 @@ def get_hh_vacancies(language):
     hh_url = 'https://api.hh.ru/vacancies'
     payload = {
         'text': f'Программист {language}',
-        'area': '1'
+        'area': f'{MOSCOW_AREA_NUMBER}'
     }
     response = requests.get(hh_url, params=payload)
     response.raise_for_status()
@@ -63,6 +63,7 @@ def make_table(languaged_vacancies, company):
 
 if __name__ == '__main__':
     load_dotenv()
+    MOSCOW_AREA_NUMBER = 1
     languages = ['TypeScript', 'Swift', 'Scala', 'Objective-C', 'Shell', 'Go', 'C', 'C#', 'C++', 'PHP', 'Ruby',
                  'Python', 'Java', 'JavaScript']
     sj_token = os.environ['SJ_TOKEN']
