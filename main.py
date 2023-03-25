@@ -2,6 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os
 from terminaltables import AsciiTable
+from itertools import count
 
 
 def get_hh_vacancies(language):
@@ -59,6 +60,16 @@ def make_table(languaged_vacancies, company):
     if company == 'hh':
         actual_table = AsciiTable(table_payload, title='HeadHunter Moscow')
     return actual_table
+
+
+def fetch_records():
+    for page in count():
+        page_response = requests.get(url, params={'page': page})
+        page_response.raise_for_status()
+        page_payload = page_response.json()
+        yield from page_payload['page_records']
+        if page >= page_payload['pages_number']:
+            break
 
 
 if __name__ == '__main__':
