@@ -5,23 +5,23 @@ from terminaltables import AsciiTable
 from itertools import count
 
 
-def get_hh_vacancies(language):
-    hh_url = 'https://api.hh.ru/vacancies'
+def get_hh_vacancies(language, hh_page):
     payload = {
         'text': f'Программист {language}',
-        'area': f'{MOSCOW_AREA_NUMBER}'
+        'area': f'{MOSCOW_AREA_NUMBER}',
+        'page': f'{hh_page}'
     }
     response = requests.get(hh_url, params=payload)
     response.raise_for_status()
     hh_vacancies = response.json()
-    return hh_vacancies['found'], hh_vacancies['items']
+    return hh_vacancies['found'], hh_vacancies['items'], hh_vacancies['pages']
 
 
-def get_sj_vacancies(language, sj_token):
-    sj_url = 'https://api.superjob.ru/2.0/vacancies/'
+def get_sj_vacancies(language, sj_token, sj_page):
     payload = {
         'keyword': f'Программист {language}',
-        'town': 'Москва'
+        'town': 'Москва',
+        'page': f'{sj_page}'
     }
     headers = {
         'X-Api-App-Id': sj_token
@@ -29,7 +29,7 @@ def get_sj_vacancies(language, sj_token):
     response = requests.get(sj_url, params=payload, headers=headers)
     response.raise_for_status()
     sj_vacancies = response.json()
-    return sj_vacancies['total'], sj_vacancies['objects']
+    return sj_vacancies['total'], sj_vacancies['objects'], sj_vacancies['pages']
 
 
 def predict_rub_salary(salary_from, salary_to, salary_currency):
@@ -62,17 +62,9 @@ def make_table(languaged_vacancies, company):
     return actual_table
 
 
-def fetch_records():
-    for page in count():
-        page_response = requests.get(url, params={'page': page})
-        page_response.raise_for_status()
-        page_payload = page_response.json()
-        yield from page_payload['page_records']
-        if page >= page_payload['pages_number']:
-            break
-
-
 if __name__ == '__main__':
+    hh_url = 'https://api.hh.ru/vacancies'
+    sj_url = 'https://api.superjob.ru/2.0/vacancies/'
     load_dotenv()
     MOSCOW_AREA_NUMBER = 1
     languages = ['TypeScript', 'Swift', 'Scala', 'Objective-C', 'Shell', 'Go', 'C', 'C#', 'C++', 'PHP', 'Ruby',
@@ -81,11 +73,16 @@ if __name__ == '__main__':
     hh_salaries, sj_salaries = [], []
     hh_languaged_vacancies, sj_languaged_vacancies = {}, {}
     for language in languages:
-        try:
-            hh_vacancies_found, hh_vacancies = get_hh_vacancies(language)
-            sj_vacancies_found, sj_vacancies = get_sj_vacancies(language, sj_token)
-        except requests.exceptions.HTTPError:
-            continue
+        for hh_page, sj_page in count(0):
+            try:
+                hh_vacancies_found, hh_vacancies, hh_page_limit = get_hh_vacancies(language, hh_page)
+                sj_vacancies_found, sj_vacancies, sj_page_limit = get_sj_vacancies(language, sj_token, sj_page)
+            except requests.exceptions.HTTPError:
+                continue
+            if hh_page >= hh_page_limit:
+                break
+            if sj_page >= sj_page_limit:
+                break
         for vacancy in sj_vacancies:
             if not vacancy.get('payment_from') and not vacancy.get('payment_to'):
                 continue
