@@ -1,6 +1,7 @@
 import requests
 from predict_rub_salary import predict_rub_salary
 
+
 def get_hh_vacancies(language, page):
     area = 1
     url = 'https://api.hh.ru/vacancies'
@@ -47,8 +48,8 @@ def get_hh_statistics():
                 processed_vacancies += 1
                 average_salary += salary
         hh_statistics[language] = {
-                'vacancies_found': len(average_salaries),
-                'vacancies_processed': processed_vacancies,
-                'average_salary': average_salary / processed_vacancies
-            }
+            'vacancies_found': len(average_salaries),
+            'vacancies_processed': processed_vacancies,
+            'average_salary': average_salary / processed_vacancies
+        }
     return hh_statistics
