@@ -19,7 +19,7 @@ def get_sj_vacancies(language, page, sj_token):
     return response.json(), response.json()['total']
 
 
-def get_sj_salary(vacancies):
+def get_sj_salaries(vacancies):
     salaries = []
     for vacancy in vacancies:
         if vacancy['currency'] != 'rub':
