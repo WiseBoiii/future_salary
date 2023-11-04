@@ -44,9 +44,16 @@ def get_hh_statistics():
             if salary:
                 processed_vacancies += 1
                 average_salary += salary
-        hh_statistics[language] = {
-            'vacancies_found': len(average_salaries),
-            'vacancies_processed': processed_vacancies,
-            'average_salary': average_salary / processed_vacancies
-        }
+        try:
+            hh_statistics[language] = {
+                'vacancies_found': len(average_salaries),
+                'vacancies_processed': processed_vacancies,
+                'average_salary': average_salary / processed_vacancies
+            }
+        except ZeroDivisionError:
+            hh_statistics[language] = {
+                'vacancies_found': len(average_salaries),
+                'vacancies_processed': processed_vacancies,
+                'average_salary': 'Salary couldn`t be calculated'
+            }
     return hh_statistics
