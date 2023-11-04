@@ -7,7 +7,7 @@ def get_sj_vacancies(language, page, sj_token):
     sj_url = 'https://api.superjob.ru/2.0/vacancies/'
     payload = {
         'town': 'Moscow',
-        'count': 100,
+        'count': 25,
         'keyword': f'Программист {language}',
         'page': page
     }
@@ -35,7 +35,7 @@ def get_sj_statistics(sj_token):
     sj_statistics = {}
     for language in languages:
         all_salaries = []
-        for page in range(5):
+        for page in range(20):
             languaged_vacancies, vacancies_found = get_sj_vacancies(language, page, sj_token)
             salaries = get_sj_salaries(languaged_vacancies['objects'])
             for salary in salaries:
