@@ -37,7 +37,7 @@ def get_sj_statistics(sj_token):
         all_salaries = []
         for page in range(5):
             languaged_vacancies, vacancies_found = get_sj_vacancies(language, page, sj_token)
-            salaries = get_sj_salary(languaged_vacancies['objects'])
+            salaries = get_sj_salaries(languaged_vacancies['objects'])
             for salary in salaries:
                 all_salaries.append(salary)
         processed_vacancies = 0
