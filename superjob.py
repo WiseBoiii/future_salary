@@ -24,7 +24,7 @@ def get_sj_salary(vacancies):
     salaries = []
     for vacancy in vacancies:
         if vacancy['currency'] != 'rub':
-            salaries.append(None)
+            continue
         else:
             salaries.append(predict_rub_salary(vacancy['payment_from'], vacancy['payment_to']))
     return salaries

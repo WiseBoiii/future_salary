@@ -33,15 +33,15 @@ def get_hh_statistics():
                 break
             for salary in salaries:
                 if not salary:
-                    average_salaries.append(None)
+                    continue
                 elif salary['currency'] != 'RUR':
-                    average_salaries.append(None)
+                    continue
                 else:
                     average_salaries.append(predict_rub_salary(salary['from'], salary['to']))
         processed_vacancies = 0
         average_salary = 0
         for salary in average_salaries:
-            if salary is not None:
+            if salary:
                 processed_vacancies += 1
                 average_salary += salary
         hh_statistics[language] = {
