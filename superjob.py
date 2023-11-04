@@ -1,6 +1,5 @@
 import requests
 import os
-from dotenv import load_dotenv
 from predict_rub_salary import predict_rub_salary
 
 
@@ -33,12 +32,9 @@ def get_sj_salary(vacancies):
 def get_sj_statistics():
     languages = ['TypeScript', 'Swift', 'Scala', 'Shell', 'Go', 'C', 'C#', 'C++', 'PHP', 'Ruby',
                  'Python', 'Java', 'JavaScript']
-    languaged_salaries = {}
-    load_dotenv()
     sj_token = os.environ['SJ_TOKEN']
     sj_statistics = {}
     for language in languages:
-        lang_statistics = {}
         all_salaries = []
         for page in range(5):
             languaged_vacancies, vacancies_found = get_sj_vacancies(language, page, sj_token)
