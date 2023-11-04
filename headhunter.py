@@ -14,14 +14,11 @@ def get_hh_vacancies(language, page):
     response = requests.get(url, params=payload)
     response.raise_for_status()
     json_vacancies = response.json()
-    return json_vacancies, json_vacancies['found']
-
-
-def get_hh_salary(vacancies):
+    vacancies = json_vacancies['items']
     salaries = []
     for vacancy in vacancies:
         salaries.append(vacancy['salary'])
-    return salaries
+    return json_vacancies, json_vacancies['found'], salaries
 
 
 def get_hh_statistics():
@@ -31,10 +28,9 @@ def get_hh_statistics():
     for language in languages:
         average_salaries = []
         for page in range(20):
-            languaged_vacancies, vacancies_found = get_hh_vacancies(language, page)
+            languaged_vacancies, vacancies_found, salaries = get_hh_vacancies(language, page)
             if page >= languaged_vacancies["pages"] - 1:
                 break
-            salaries = get_hh_salary(languaged_vacancies['items'])
             for salary in salaries:
                 if not salary:
                     average_salaries.append(None)
