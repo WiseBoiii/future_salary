@@ -13,7 +13,8 @@ def get_hh_vacancies(language, page):
     }
     response = requests.get(url, params=payload)
     response.raise_for_status()
-    return response.json(), response.json()['found']
+    json_vacancies = response.json()
+    return json_vacancies, json_vacancies['found']
 
 
 def get_hh_salary(vacancies):
