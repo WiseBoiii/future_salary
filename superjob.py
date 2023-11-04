@@ -29,10 +29,9 @@ def get_sj_salary(vacancies):
     return salaries
 
 
-def get_sj_statistics():
+def get_sj_statistics(sj_token):
     languages = ['TypeScript', 'Swift', 'Scala', 'Shell', 'Go', 'C', 'C#', 'C++', 'PHP', 'Ruby',
                  'Python', 'Java', 'JavaScript']
-    sj_token = os.environ['SJ_TOKEN']
     sj_statistics = {}
     for language in languages:
         all_salaries = []

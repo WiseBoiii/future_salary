@@ -2,6 +2,7 @@ from terminaltables import AsciiTable
 from headhunter import get_hh_statistics
 from superjob import get_sj_statistics
 from dotenv import load_dotenv
+import os
 
 
 def make_table(languaged_vacancies, company_name):
@@ -24,8 +25,9 @@ def make_table(languaged_vacancies, company_name):
 
 def main():
     load_dotenv()
+    sj_token = os.environ['SJ_TOKEN']
     hh_vacancies = make_table(get_hh_statistics(), 'HeadHunter Moscow')
-    sj_vacancies = make_table(get_sj_statistics(), 'SuperJob Moscow')
+    sj_vacancies = make_table(get_sj_statistics(sj_token), 'SuperJob Moscow')
     print(hh_vacancies.table, '\n', sj_vacancies.table)
 
 
