@@ -39,21 +39,18 @@ def get_hh_statistics():
                 else:
                     average_salaries.append(predict_rub_salary(salary['from'], salary['to']))
         processed_vacancies = 0
-        average_salary = 0
+        salary_sum = 0
         for salary in average_salaries:
             if salary:
                 processed_vacancies += 1
-                average_salary += salary
+                salary_sum = salary
         try:
-            hh_statistics[language] = {
-                'vacancies_found': len(average_salaries),
-                'vacancies_processed': processed_vacancies,
-                'average_salary': average_salary / processed_vacancies
-            }
+            average_salary = salary_sum / processed_vacancies
         except ZeroDivisionError:
-            hh_statistics[language] = {
-                'vacancies_found': len(average_salaries),
-                'vacancies_processed': processed_vacancies,
-                'average_salary': 'Salary couldn`t be calculated'
-            }
+            average_salary = 'Salary couldn`t be calculated'
+        hh_statistics[language] = {
+            'vacancies_found': len(average_salaries),
+            'vacancies_processed': processed_vacancies,
+            'average_salary': average_salary
+        }
     return hh_statistics
