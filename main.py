@@ -4,7 +4,6 @@ from superjob import get_sj_statistics
 from dotenv import load_dotenv
 import os
 
-
 def make_table(languaged_vacancies, company_name):
     table_payload = [
         ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата']

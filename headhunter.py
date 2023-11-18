@@ -13,12 +13,9 @@ def get_hh_vacancies(language, page):
     }
     response = requests.get(url, params=payload)
     response.raise_for_status()
-    json_vacancies = response.json()
-    vacancies = json_vacancies['items']
-    salaries = []
-    for vacancy in vacancies:
-        salaries.append(vacancy['salary'])
-    return json_vacancies, json_vacancies['found'], salaries
+    hh_vacancies = response.json()
+    hh_vacancies_found = len(hh_vacancies['items'])
+    return hh_vacancies, hh_vacancies_found
 
 
 def get_hh_statistics():
@@ -27,29 +24,33 @@ def get_hh_statistics():
     hh_statistics = {}
     for language in languages:
         average_salaries = []
-        for page in range(20):
-            languaged_vacancies, vacancies_found, salaries = get_hh_vacancies(language, page)
-            if page >= languaged_vacancies["pages"] - 1:
-                break
-            for salary in salaries:
-                if not salary:
-                    continue
-                elif salary['currency'] != 'RUR':
-                    continue
-                else:
-                    average_salaries.append(predict_rub_salary(salary['from'], salary['to']))
+        salaries = []
+        vacancy_counter = 0
+        vacancies = get_hh_vacancies(language, page=0)[0]
+        for page in range(vacancies['pages']):
+            languaged_vacancies, vacancies_found = get_hh_vacancies(language, page)
+            vacancy_counter += vacancies_found
+            for vacancy in languaged_vacancies['items']:
+                salaries.append(vacancy['salary'])
+        for salary in salaries:
+            if not salary:
+                continue
+            elif salary['currency'] != 'RUR':
+                continue
+            else:
+                average_salaries.append(predict_rub_salary(salary['from'], salary['to']))
         processed_vacancies = 0
         salary_sum = 0
         for salary in average_salaries:
             if salary:
                 processed_vacancies += 1
-                salary_sum = salary
+                salary_sum += salary
         try:
             average_salary = salary_sum / processed_vacancies
         except ZeroDivisionError:
             average_salary = 'Salary couldn`t be calculated'
         hh_statistics[language] = {
-            'vacancies_found': len(average_salaries),
+            'vacancies_found': vacancy_counter,
             'vacancies_processed': processed_vacancies,
             'average_salary': average_salary
         }

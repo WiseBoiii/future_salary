@@ -16,7 +16,8 @@ def get_sj_vacancies(language, page, sj_token):
     }
     response = requests.get(sj_url, params=payload, headers=headers)
     response.raise_for_status()
-    return response.json(), response.json()['total']
+    sj_vacancies = response.json()
+    return sj_vacancies, sj_vacancies['total']
 
 
 def get_sj_salaries(vacancies):
@@ -35,11 +36,11 @@ def get_sj_statistics(sj_token):
     sj_statistics = {}
     for language in languages:
         all_salaries = []
-        for page in range(20):
+        vacancies = get_sj_vacancies(language, page=0, sj_token=sj_token)[0]
+        for page in range(vacancies['total']):
             languaged_vacancies, vacancies_found = get_sj_vacancies(language, page, sj_token)
             salaries = get_sj_salaries(languaged_vacancies['objects'])
-            for salary in salaries:
-                all_salaries.append(salary)
+            all_salaries.extend(salaries)
         processed_vacancies = 0
         average_salary = 0
         for salary in all_salaries:
@@ -47,16 +48,13 @@ def get_sj_statistics(sj_token):
                 processed_vacancies += 1
                 average_salary += salary
         try:
-            sj_statistics[language] = {
-                'vacancies_found': len(all_salaries),
-                'vacancies_processed': processed_vacancies,
-                'average_salary': average_salary / processed_vacancies
-            }
+            average_salary = average_salary / processed_vacancies
         except ZeroDivisionError:
-            sj_statistics[language] = {
-                'vacancies_found': len(all_salaries),
-                'vacancies_processed': processed_vacancies,
-                'average_salary': 'Salary couldn`t be calculated'
-            }
+            average_salary = 'Salary couldn`t be calculated'
+        sj_statistics[language] = {
+            'vacancies_found': len(all_salaries),
+            'vacancies_processed': processed_vacancies,
+            'average_salary': average_salary
+        }
 
     return sj_statistics
