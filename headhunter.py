@@ -1,5 +1,6 @@
 import requests
 from predict_rub_salary import predict_rub_salary
+from itertools import count
 
 
 def get_hh_vacancies(language, page):
@@ -14,8 +15,7 @@ def get_hh_vacancies(language, page):
     response = requests.get(url, params=payload)
     response.raise_for_status()
     hh_vacancies = response.json()
-    hh_vacancies_found = len(hh_vacancies['items'])
-    return hh_vacancies, hh_vacancies_found
+    return hh_vacancies
 
 
 def get_hh_statistics():
@@ -26,9 +26,11 @@ def get_hh_statistics():
         average_salaries = []
         salaries = []
         vacancy_counter = 0
-        vacancies = get_hh_vacancies(language, page=0)[0]
-        for page in range(vacancies['pages']):
-            languaged_vacancies, vacancies_found = get_hh_vacancies(language, page)
+        for page in count(0, 1):
+            languaged_vacancies = get_hh_vacancies(language, page)
+            vacancies_found = languaged_vacancies['found']
+            if page >= languaged_vacancies['pages'] - 1:
+                break
             vacancy_counter += vacancies_found
             for vacancy in languaged_vacancies['items']:
                 salaries.append(vacancy['salary'])
