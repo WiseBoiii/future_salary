@@ -25,13 +25,10 @@ def get_hh_statistics():
     for language in languages:
         average_salaries = []
         salaries = []
-        vacancy_counter = 0
         for page in count(0, 1):
             languaged_vacancies = get_hh_vacancies(language, page)
-            vacancies_found = languaged_vacancies['found']
             if page >= languaged_vacancies['pages'] - 1:
                 break
-            vacancy_counter += vacancies_found
             for vacancy in languaged_vacancies['items']:
                 salaries.append(vacancy['salary'])
         for salary in salaries:
@@ -52,7 +49,7 @@ def get_hh_statistics():
         except ZeroDivisionError:
             average_salary = 'Salary couldn`t be calculated'
         hh_statistics[language] = {
-            'vacancies_found': vacancy_counter,
+            'vacancies_found': languaged_vacancies['found'],
             'vacancies_processed': processed_vacancies,
             'average_salary': average_salary
         }
